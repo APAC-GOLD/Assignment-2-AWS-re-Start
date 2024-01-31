@@ -1,0 +1,56 @@
+# serverless warmfuzzies yml v3
+
+service: app
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: "python3.12"
+  region: us-east-1
+  environment:
+    S3_BUCKET_NAME: "photos-yma"
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+        - s3:PutObject
+        - events:PutEvents
+      Resource:
+        - "arn:aws:s3:::${self:provider.environment.S3_BUCKET_NAME}/*"
+
+functions:
+  process_image_function:
+    handler: handler.lambda_handler
+    events:
+      - s3:
+          bucket: "${self:provider.environment.S3_BUCKET_NAME}"
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploads/
+            - suffix: .jpg
+  notify_resize_success_function:
+    handler: handler.notify_resize_success_function
+    events:
+      - eventBridge:
+          eventBus: 'image-processing-bus'
+          pattern:
+            detail:
+              status: ["SUCCEEDED"]
+  notify_resize_fail_function:
+    handler: handler.notify_resize_fail_function
+    events:
+      - eventBridge:
+          eventBus: 'image-processing-bus'
+          pattern:
+            detail:
+              status: ["FAILED"]
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+  dockerizePip: true
+
+
+  

@@ -1,0 +1,32 @@
+	# Overview - Modular Deployment Serverless Framework
+
+  functions:
+  processImage:
+    handler: handler.lambda_handler
+   
+      - s3:
+          bucket: ${self:custom.bucket}
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploads/
+            - suffix: .jpg
+  notifyResizeSuccess:
+    handler: event_handling.notify_resize_success_function
+    events:
+      - eventBridge:
+          eventBus: image-processing-bus
+          pattern:
+            detail:
+              status:
+                - SUCCEEDED
+  notifyResizeFail:
+    handler: event_handling.notify_resize_fail_function
+    events:
+      - eventBridge:
+          eventBus: image-processing-bus
+          pattern:
+            detail:
+              status:
+                - FAILED
+
+
