@@ -533,12 +533,12 @@ A more robust and scalable approach would be to configure VPC security groups an
 - This simplifies configuration/management and improves availability, security and costs.
 - Private VPC endpoints could also provide secure connectivity without public resources if needed.
 
-## 2.II.2.a.2. Most Convenient Method: EC2 Instance Connect (EIC) + Identity & Access Management (IAM)
+# 2.II.2.a.2. Most Convenient Method: EC2 Instance Connect (EIC) + Identity & Access Management (IAM)
 
 To Secure Access for EC2-Instances to S3-DynamoDB-Recources today, we can use the Command Line Interface (CLI) to launch an Amazon EC2 Instance Connect (EIC) Endpoint, a new feature (since June 2023) allows you to connect securely to your instances from the Internet.
 EIC Endpoint combines identity-based and network-based access controls, providing the isolation, control, and logging needed to meet your organization’s security requirements [[ℹ]](https://aws.amazon.com/blogs/compute/secure-connectivity-from-public-to-private-introducing-ec2-instance-connect-endpoint-june-13-2023/).
 
-### 2.II.2.a.2.1. Justification
+# 2.II.2.a.2.1. Justification
 
 The key benefit of this approach is that it centrally manages access outside the instances, avoiding the need to hardcode or distribute credentials directly to each EC2 host. Updates are easy - just modify the role policy. This provides the most seamless integration of IAM with EC2 for S3 and DynamoDB access.
 
@@ -566,17 +566,17 @@ The key benefit of this approach is that it centrally manages access outside the
 7. Create an IAM role and policy granting instances permission to use EIC; Attach the appropriate S3 and DynamoDB permissions policies (For example, the `AmazonS3FullAccess` and `AmazonDynamoDBFullAccess` policies). When you create an EC2 Instance Connect Endpoint, the service-linked role named `AWSServiceRoleForEC2InstanceConnect` and the managed policy named `EC2InstanceConnectEndpoint` are automatically created in your AWS account, and the managed policy is automatically attached to the service-linked role.
 8. Attach the IAM role to your instances at launch. When launching new EC2 instances, select the IAM role from the step above in the configuration. The EC2 instances will now have access to call the S3 and DynamoDB APIs without needing to manage access keys separately. Credentials are delivered through the instance profile service at runtime.
 9. Install the EC2 Instance Connect package on Linux instances to enable EIC functionality.
-10. You can now use the EC2 console to connect to instances via EIC without a bastion host or public IP access. Let me know if any part of the process needs more explanation.
+10. You can now use the EC2 console to connect to instances via EIC without a bastion host or public IP access.
 
 Test: To verify, you can install and run the AWS CLI on an instance. Commands like `aws s3 ls` or `aws dynamodb list-tables` should now work without additional configuration [[ℹ]](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/create-ec2-instance-connect-endpoints.html)
 
-### 2.II.2.a.2.3. Security
+## 2.II.2.a.2.3. Security
 
 Use EIC Endpoints for secure access from EC2-Instances to S3-DynamoDB-Recources.
 
 - IAM authorization is required to create the EIC Endpoint and also to make a connection. This is good because you can rely on network access controls like, security groups [[ℹ]](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/create-ec2-instance-connect-endpoints.html)
 
-#### 2.II.2.a.2.3.1 Route Table
+## 2.II.2.a.2.3.1 Route Table
 
 - The **EIC Endpoint Route Table** with - Multi-Availability Zone capability,
 - **Public-Subnet-to-Private-Subnet** routes across AZs [[ℹ]](https://docs.aws.amazon.com/managedservices/latest/appguide/about-security-groups.html) [[ℹ]](https://aws.amazon.com/blogs/compute/secure-connectivity-from-public-to-private-introducing-ec2-instance-connect-endpoint-june-13-2023/) [[ℹ]](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/eice-security-groups.html).
@@ -584,9 +584,9 @@ Use EIC Endpoints for secure access from EC2-Instances to S3-DynamoDB-Recources.
 
 [Almost the Most Convenient Method: Public EIC E](Answer.md) ![Public Subnet](<Tables/Picture 8 - EIC E Route Table New.png>)
 
-#### 2.II.2.a.2.3.2 Security Group
+## 2.II.2.a.2.3.2 Security Group
 
-##### 2.II.2.a.2.3.2.1 Public EIC Endpoints - Almost the Most Convenient Method
+# 2.II.2.a.2.3.2.1 Public EIC Endpoints - Almost the Most Convenient Method
 
 Table - showing EIC Endpoint Security Group
 ![Alt text](<Tables/Picture 8 - EIC Endpoint Security Group New.png>)
@@ -617,7 +617,7 @@ Outbound Traffic:
 
 No additional ports need to be opened since health checking and load balancing are not applicable roles for an EIC endpoint.
 
-##### 2.II.2.a.2.3.2.2 Private EIC Endpoints - the Most Convenient Method
+# 2.II.2.a.2.3.2.2 Private EIC Endpoints - the Most Convenient Method
 
 This allows instances connected via the EIC endpoint to reach the database on the appropriate ports [[ℹ]](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/vpc-endpoints-dynamodb.html) [[ℹ]](https://d2908q01vomqb2.cloudfront.net/1b6453892473a467d07372d45eb05abc2031647a/2023/06/12/ec2-instance-connect-endpoint.drawio-1.png).
 
@@ -628,7 +628,7 @@ This allows instances connected via the EIC endpoint to reach the database on th
 * For example, given EIC Endpoint was configured in the Management Tier, no other ingress rules would be needed since the management subnet should have access to the private subnet, secure resource: RDS Database
 * `Diagram 4`. Please refer to Diagram 4 in the last section of document, 2.II.2, part: a, to see an example architecture diagram.
 
-##### 2.II.2.a.2.3.2.3 Destination/Target Security Group
+## 2.II.2.a.2.3.2.3 Destination/Target Security Group
 
 For the security group of the private subnet with access to the database instances, add inbound rules allowing access from the security group of the EIC endpoint on ports 3306/443.
 
@@ -646,7 +646,7 @@ Example B:
 - Port Range: 443
 - Description: Allow HTTPS access from EIC endpoint
 
-### 2.II.2.a.2.4 Diagram 3 & 4 Showing - EC2 Instance Connect (EIC)
+# 2.II.2.a.2.4 Diagram 3 & 4 Showing - EC2 Instance Connect (EIC)
 
 The following diagrams show how to use EIC Endpoints for secure access from EC2-Instances to S3-DynamoDB-Recources.
 
