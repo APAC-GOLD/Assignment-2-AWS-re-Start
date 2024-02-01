@@ -57,7 +57,9 @@ Amy Newkirk
 
 ![Alt text](<Assignment 2 Part II.2 Design Justification x2/Screenshot 2024-02-01 at 8.43.33 PM.png>)
 
-Reference: https://aws.amazon.com/blogs/compute/secure-connectivity-from-public-to-private-introducing-ec2-instance-connect-endpoint-june-13-2023/
+Reference: 
+EIC Endpoints - Why?: https://aws.amazon.com/blogs/compute/secure-connectivity-from-public-to-private-introducing-ec2-instance-connect-endpoint-june-13-2023/
+Secure Ingress/ Egress w/ DynamoDB/S3 via Endpoints in Diagram 3 & 4: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/vpc-endpoints-dynamodb.html
 
 ![Alt text](<Assignment 2 Part II.2 Design Justification x2/Screenshot 2024-02-01 at 9.26.46 PM.png>)
 
