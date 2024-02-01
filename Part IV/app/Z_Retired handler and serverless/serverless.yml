@@ -1,0 +1,48 @@
+# sudo sls plugin install -n serverless-python-requirements (uses mac book pw)
+# npm install
+# sls package
+# sls deploy
+# pip install -r requirements.txt to fix imports that are not available
+
+service: app
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: "python3.12" # you will want to use the Python version you have locally
+  region: us-east-1
+
+  environment:
+    S3_BUCKET_NAME: "photos-yma" # you will want to have an unique name
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+      Resource:
+        - "arn:aws:s3:::${self:provider.environment.S3_BUCKET_NAME}/uploads/*"
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+      Resource:
+        - "arn:aws:s3:::${self:provider.environment.S3_BUCKET_NAME}/thumbnails/*"
+
+functions:
+  create_thumbnail_function:
+    handler: handler.create_thumbnail
+    name: create-thumbnail-function
+    events:
+      - s3:
+          bucket: "${self:provider.environment.S3_BUCKET_NAME}"
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploads/
+            - suffix: .jpg
+
+plugins:
+  - serverless-python-requirements
+  #- serverless-webpack
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
