@@ -1,4 +1,8 @@
-# Assignment2-AWS-Certified-Cloud-Practitioner
+# Assignment2
+## Amazon Web Services, Level 5
+### Unitec Institute of Technology
+AWS re/Start, October 2023 - February 2024
+
 - [Rules](#rules)
 - [Part I. System architecture and system design (30 marks total)](#part-i-system-architecture-and-system-design-30-marks-total)
   - [Part I.1. (5/30 marks)](#part-i1-530-marks)
