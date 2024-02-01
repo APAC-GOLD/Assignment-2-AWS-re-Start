@@ -1,4 +1,0 @@
-#requirements warmfuzzy v3
-pillow #image processing lib
-boto3 #python sdk
-pydantic
